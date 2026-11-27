@@ -1,5 +1,7 @@
 // 用 npm run dev 指令启动
+import { useEffect } from 'react'
 import './App.css'
+import Experiments from './Experiments.jsx'
 import overviewImageUrl from './picture/overview.webp'
 import fireAgentsImageUrl from './picture/fireagents.webp'
 
@@ -7,10 +9,41 @@ const HF_DEMO_VIDEO_BASE =
   'https://huggingface.co/datasets/ZWQ1103/temp_video/resolve/main'
 
 const demonstrationVideoUrl = `${HF_DEMO_VIDEO_BASE}/FireGround.mp4`
-const demonstrationVideoUrl2 = `${HF_DEMO_VIDEO_BASE}/demo_third_vision.mov`
+const demonstrationVideoUrl2 = `${HF_DEMO_VIDEO_BASE}/real_environment_demo.mp4`
 const demo1ImageUrl = `${HF_DEMO_VIDEO_BASE}/01DHP.webm`
 const demo2ImageUrl = `${HF_DEMO_VIDEO_BASE}/02RCE.webm`
 const demo3ImageUrl = `${HF_DEMO_VIDEO_BASE}/03IPD.webm`
+
+const authors = [
+  { name: 'Weiqin Zu', superscript: '1,2*' },
+  { name: 'Yujie Lu', superscript: '2*' },
+  { name: 'Miao Li', superscript: '2' },
+  { name: 'Yifan Chen', superscript: '2,4' },
+  { name: 'Huiying Li', superscript: '2' },
+  { name: 'Yizhe Huang', superscript: '2,3' },
+  { name: 'Kaiyang Cai', superscript: '2,5' },
+  { name: 'Hualong Yan', superscript: '6' },
+  { name: 'Ruihuan Zhang', superscript: '6' },
+  { name: 'Dengji Zhao', superscript: '1†' },
+  { name: 'Zhenliang Zhang', superscript: '2†' },
+  { name: 'Xue Feng', superscript: '†' },
+]
+
+const affiliations = [
+  { id: 1, name: 'ShanghaiTech University' },
+  { id: 2, name: 'State Key Laboratory of General Artificial Intelligence, BIGAI' },
+  { id: 3, name: 'Peking University' },
+  { id: 4, name: 'Tsinghua University' },
+  { id: 5, name: 'University of Science and Technology of China' },
+  { id: 6, name: 'China Fire and Rescue Institute' },
+]
+
+const contactEmails = [
+  'zuwq@shanghaitech.edu.cn',
+  'zhaodj@shanghaitech.edu.cn',
+  'zlzhang@bigai.ai',
+  'feng.xue1580@gmail.com',
+]
 
 const challenges = [
   {
@@ -45,6 +78,58 @@ const challengeDemos = [
     id: 'demonstration-rescue',
     src: demo3ImageUrl,
     ariaLabel: 'FireGround intervention-coupled rescue demonstration video',
+  },
+]
+
+const overviewRuns = [
+  {
+    label: 'Policy A · Study first',
+    file: 'first_fire.mp4',
+    outcome: 'This route preserved more property.',
+  },
+  {
+    label: 'Policy B · Gym first',
+    file: 'first_civilian.mp4',
+    outcome: 'Civilians lost less health on this route.',
+  },
+]
+
+const keyFindings = [
+  {
+    title: 'Similar property savings came with different evacuation rates',
+    description: 'GPT-6 and GPT-6.1 differed by 1.01 percentage points in Saved Value Ratio. GPT-6.1’s Civilian Rescue Rate was 33.33 percentage points higher.',
+    resultAnchor: 'symbolic-t5',
+    resultLink: 'View all T5 symbolic results',
+    caption: 'Table 2. T5 with local symbolic observations and four firefighting robots under decentralized control with communication.',
+    columns: ['Model', 'Saved Value Ratio', 'Civilian Rescue Rate'],
+    rows: [
+      ['GPT-6', '40.98%', '52.78%'],
+      ['GPT-6.1', '39.97%', '86.11%'],
+    ],
+  },
+  {
+    title: 'The RGB team saw more objects and evacuated fewer civilians',
+    description: 'With RGB alone, DeepSeek saw 81.39% of eligible objects and evacuated no civilians. With object detection and segmentation (RGB+DS), the team evacuated 16.67% of civilians.',
+    resultAnchor: 'visual-t5-deepseek',
+    resultLink: 'Compare T5 visual results',
+    caption: 'Table 3. T5 with DeepSeek and four firefighting robots under decentralized control with communication.',
+    columns: ['Visual input', 'Exploration Coverage', 'Civilian Rescue Rate'],
+    rows: [
+      ['RGB', '81.39%', '0%'],
+      ['RGB+DS', '63.21%', '16.67%'],
+    ],
+  },
+  {
+    title: 'Four robots gained more under decentralized control',
+    description: 'A single DeepSeek robot saved 32.51% of the property value that would have been lost in a free-burning run. Four centrally controlled robots saved less, while four communicating robots under decentralized control saved more.',
+    resultAnchor: 'team-t4-deepseek',
+    resultLink: 'Compare all T4 control settings',
+    caption: 'Table 4. T4 with DeepSeek and global symbolic observations. Team Gain is the percentage-point difference from the matched single robot.',
+    columns: ['Team control', 'Saved Value Ratio', 'Team Gain (pp)'],
+    rows: [
+      ['Centralized', '28.08%', '−4.43'],
+      ['Decentralized with communication', '49.39%', '+16.88'],
+    ],
   },
 ]
 
@@ -134,6 +219,7 @@ const comparisonGroups = [
     rows: [
       {
         benchmark: 'MAP-THOR',
+        citation: { number: 21, url: 'https://openreview.net/forum?id=ZygZN5egzy', title: 'MAP-THOR: Benchmarking Long-Horizon Multi-Agent Planning Frameworks in Partially Observable Environments' },
         irreversibleLoss: 'Not reported',
         interventionCoupling: 'Not reported',
         inferenceProgression: 'Not reported',
@@ -144,6 +230,7 @@ const comparisonGroups = [
       },
       {
         benchmark: 'PARTNR',
+        citation: { number: 3, url: 'https://arxiv.org/abs/2411.00081', title: 'PARTNR: A Benchmark for Planning and Reasoning in Embodied Multi-agent Tasks' },
         irreversibleLoss: 'Not reported',
         interventionCoupling: 'Not reported',
         inferenceProgression: 'Not reported',
@@ -159,6 +246,7 @@ const comparisonGroups = [
     rows: [
       {
         benchmark: 'FD-Bench',
+        citation: { number: 44, url: 'https://escholarship.org/uc/item/4cd1t4p9', title: 'FD-Bench: Fine-Grained Evaluating the Decision-Making Capability of LLM Agents in Dynamic Scenarios' },
         irreversibleLoss: 'Not reported',
         interventionCoupling: 'No',
         inferenceProgression: 'No',
@@ -169,6 +257,7 @@ const comparisonGroups = [
       },
       {
         benchmark: 'HAZARD',
+        citation: { number: 42, url: 'https://arxiv.org/abs/2401.12975', title: 'Hazard challenge: Embodied decision making in dynamically changing environments' },
         irreversibleLoss: 'Yes',
         interventionCoupling: 'No',
         inferenceProgression: 'Not reported',
@@ -179,6 +268,7 @@ const comparisonGroups = [
       },
       {
         benchmark: 'CREW-Wildfire',
+        citation: { number: 10, url: 'https://arxiv.org/abs/2507.05178', title: 'CREW-Wildfire: Benchmarking agentic multi-agent collaborations at scale' },
         irreversibleLoss: 'Yes',
         interventionCoupling: 'Yes',
         inferenceProgression: 'No',
@@ -189,6 +279,7 @@ const comparisonGroups = [
       },
       {
         benchmark: 'FireNav',
+        citation: { number: 1, url: 'https://firenav.github.io/', title: 'FireNav: A Physics-Grounded Benchmark for Cooperative Multi-Agent Navigation in Dynamic Indoor Fire Environments' },
         irreversibleLoss: 'Yes',
         interventionCoupling: 'No',
         inferenceProgression: 'Not reported',
@@ -199,6 +290,7 @@ const comparisonGroups = [
       },
       {
         benchmark: 'RescueBench',
+        citation: { number: 39, url: 'https://arxiv.org/abs/2606.01848', title: 'RescueBench: Can Embodied Agents Save Lives in the Wild ?' },
         irreversibleLoss: 'Not reported',
         interventionCoupling: 'Not reported',
         inferenceProgression: 'Not reported',
@@ -209,6 +301,7 @@ const comparisonGroups = [
       },
       {
         benchmark: 'RT-Safe',
+        citation: { number: 40, url: 'https://arxiv.org/abs/2610.09294', title: 'RT-Safe: Benchmarking Agent Safety in Real-Time Embodied Environment' },
         irreversibleLoss: 'Not reported',
         interventionCoupling: 'Yes',
         inferenceProgression: 'Yes',
@@ -219,6 +312,7 @@ const comparisonGroups = [
       },
       {
         benchmark: 'ROAR',
+        citation: { number: 37, url: 'https://arxiv.org/abs/2610.24282', title: 'ROAR: Benchmarking LMM Agents under Real-Time Constraints in Multiplayer Action-Shooter Games' },
         irreversibleLoss: 'Yes',
         interventionCoupling: 'Yes',
         inferenceProgression: 'Yes',
@@ -243,6 +337,22 @@ const comparisonGroups = [
 ]
 
 function App() {
+  useEffect(() => {
+    function revealSection() {
+      const target = document.getElementById(window.location.hash.slice(1))
+      if (!target) return
+
+      const disclosure = target.closest('details')
+      if (disclosure) disclosure.open = true
+      target.scrollIntoView()
+    }
+
+    // Fragment targets are mounted by React and may be inside a closed task panel.
+    revealSection()
+    window.addEventListener('hashchange', revealSection)
+    return () => window.removeEventListener('hashchange', revealSection)
+  }, [])
+
   return (
     <main id="top">
       <header className="site-header" aria-label="FireGround navigation">
@@ -252,12 +362,13 @@ function App() {
         <nav>
           <a href="#abstract">Abstract</a>
           <a href="#overview">Overview</a>
+          <a href="#findings">Key Findings</a>
           <a href="#simulation-preview">Simulation Preview</a>
           <a href="#challenge">Challenges</a>
-          <a href="#fireagents">FireAgents</a>
-          <a href="#evaluation">Evaluation</a>
           <a href="#comparison">Comparison</a>
-          <a href="#findings">Findings</a>
+          <a href="#fireagents">FireAgents</a>
+          <a href="#evaluation">Evaluation Protocol</a>
+          <a href="#experiments">Experiments</a>
         </nav>
       </header>
 
@@ -275,7 +386,29 @@ function App() {
         <div className="hero-content">
           <h1>FireGround</h1>
           <p className="hero-copy">Benchmarking Embodied Decision-Making in Dynamic Residential Fires</p>
-          <p className="hero-authors">Anonymous Authors</p>
+          <div className="hero-byline">
+            <ul className="hero-authors" aria-label="Authors" aria-describedby="author-notes">
+              {authors.map(({ name, superscript }) => (
+                <li key={name}>{name}<sup>{superscript}</sup></li>
+              ))}
+            </ul>
+
+            <ul className="hero-affiliations" aria-label="Author affiliations">
+              {affiliations.map(({ id, name }) => (
+                <li key={id}><sup>{id}</sup> {name}</li>
+              ))}
+            </ul>
+
+            <p className="author-notes" id="author-notes">
+              <span><sup>*</sup> These authors contributed equally.</span>
+              <span><sup>†</sup> Corresponding authors.</span>
+            </p>
+            <address className="author-contact" aria-label="Contact emails">
+              {contactEmails.map((email) => (
+                <a key={email} href={`mailto:${email}`}>{email}</a>
+              ))}
+            </address>
+          </div>
           <div className="hero-actions" aria-label="Primary links">
             <a
               href="https://github.com/ZUWQ/FireGround"
@@ -286,7 +419,7 @@ function App() {
               Code
             </a>
             <a
-              href="https://huggingface.co/datasets/EMAS4Rescue/FireGround"
+              href="https://huggingface.co/datasets/ZWQ1103/FireGround"
               className="secondary-link"
               target="_blank"
               rel="noopener noreferrer"
@@ -302,35 +435,33 @@ function App() {
               Simulator
             </a>
           </div>
+          <details className="hero-abstract" lang="en">
+            <summary>Full abstract</summary>
+            <p id="abstract">
+              Dynamic embodied environments such as residential fire scenarios challenge agents to
+              interpret evolving visual observations and act promptly as hazards evolve. We introduce
+              FireGround, an Unreal Engine 5 benchmark coupling local visual perception, fire suppression,
+              and civilian evacuation in 3D residential environments. Smoke and illumination changes
+              affect observations, suppression alters fire progression, and civilian health deteriorates
+              with exposure, requiring agents to balance information gathering with timely intervention.
+              Its five tasks vary observation scope, rescue objectives, and robot teams, with metrics
+              tailored to these challenges. We also introduce FireAgents, a standardized agent
+              architecture supporting symbolic and visual observations under single-robot and centralized
+              or decentralized multi-robot control. Evaluations of proprietary and open-source foundation
+              models reveal lower performance under visual observations in several settings and
+              difficulties translating broader exploration into better outcomes. Benefits from perception
+              assistance and additional robots depend on task objectives and control structure. Together,
+              FireGround and FireAgents support systematic evaluation of perception, reasoning, and action
+              in dynamic embodied environments.
+            </p>
+          </details>
         </div>
-      </section>
-
-      <section className="abstract band band--light" lang="en" id="abstract">
-        <div className="section-heading">
-          <h2>Abstract</h2>
-        </div>
-        <p className="lead abstract-lead">
-          Dynamic embodied environments such as residential fire scenarios challenge agents to
-          interpret evolving visual observations and act promptly as hazards evolve. We introduce
-          FireGround, an Unreal Engine 5 benchmark coupling local visual perception, fire suppression,
-          and civilian evacuation in 3D residential environments. Smoke and illumination changes
-          affect observations, suppression alters fire progression, and civilian health deteriorates
-          with exposure, requiring agents to balance information gathering with timely intervention.
-          Its five tasks vary observation scope, rescue objectives, and robot teams, with metrics
-          tailored to these challenges. We also introduce FireAgents, a standardized agent
-          architecture supporting symbolic and visual observations under single-robot and centralized
-          or decentralized multi-robot control. Evaluations of proprietary and open-source foundation
-          models reveal lower performance under visual observations in several settings and
-          difficulties translating broader exploration into better outcomes. Benefits from perception
-          assistance and additional robots depend on task objectives and control structure. Together,
-          FireGround and FireAgents support systematic evaluation of perception, reasoning, and action
-          in dynamic embodied environments.
-        </p>
       </section>
 
       <section className="overview band band--beige" id="overview">
         <div className="section-heading">
           <h2>Overview</h2>
+          <p className="overview-question">Two rooms are on fire. Should the robots reach the study or the gym first?</p>
         </div>
         <figure className="paper-figure">
           <a href={overviewImageUrl} aria-label="View Figure 1 at full resolution">
@@ -344,14 +475,67 @@ function App() {
             />
           </a>
           <figcaption>
-            <strong>Figure 1.</strong> Two rooms are on fire. Should the robots reach the study or
-            the gym first? The two runs start with the same fires and show how that choice changes
-            property damage and civilian health.
+            <strong>Figure 1.</strong> Both runs start with the same fires. The first room the robots
+            reach changes how much property they preserve and how much harm civilians experience.
           </figcaption>
         </figure>
 
-        <section className="task-configurations" id="tasks" aria-labelledby="tasks-heading">
-          <h3 id="tasks-heading">Five task configurations</h3>
+        <section className="overview-clips" aria-labelledby="overview-clips-heading">
+          <h3 id="overview-clips-heading">Watch the two runs from Figure 1</h3>
+          <div className="overview-clips-grid">
+            {overviewRuns.map(({ label, file, outcome }) => (
+              <figure key={file}>
+                <figcaption>{label}</figcaption>
+                <video
+                  src={`${HF_DEMO_VIDEO_BASE}/${file}`}
+                  aria-label={`Figure 1 run: ${label}`}
+                  controls
+                  playsInline
+                  preload="metadata"
+                />
+                <p>{outcome}</p>
+              </figure>
+            ))}
+          </div>
+        </section>
+      </section>
+
+      <section className="findings band band--light" id="findings" aria-labelledby="findings-heading">
+        <div className="section-heading">
+          <h2 id="findings-heading">Key Findings</h2>
+          <p>Values are means across six residential scenarios, with three trials per scenario for each condition.</p>
+        </div>
+        <div className="finding-list">
+          {keyFindings.map(({ title, description, caption, columns, rows, resultAnchor, resultLink }) => (
+            <article className="finding-result" key={title}>
+              <div>
+                <h3>{title}</h3>
+                <p>{description}</p>
+                <a href={`#${resultAnchor}`}>{resultLink}</a>
+              </div>
+              <table className="finding-table">
+                <caption>{caption}</caption>
+                <thead>
+                  <tr>{columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {rows.map(([condition, firstMetric, secondMetric]) => (
+                    <tr key={condition}>
+                      <th scope="row">{condition}</th>
+                      <td>{firstMetric}</td>
+                      <td>{secondMetric}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="band band--beige" aria-labelledby="tasks-heading">
+        <div className="task-configurations" id="tasks">
+          <h2 id="tasks-heading">Five task configurations</h2>
           <p>T2, T3, and T4 each change one feature of T1. T5 combines all three changes.</p>
           <dl className="task-list">
             {tasks.map((task) => (
@@ -365,7 +549,7 @@ function App() {
             The main T4 and T5 experiments use four firefighting robots. A separate T5 experiment
             varies the mix of firefighting and rescue robots.
           </p>
-        </section>
+        </div>
       </section>
 
       <section className="simulation-preview band band--dark" id="simulation-preview">
@@ -425,6 +609,54 @@ function App() {
               </div>
             )
           })}
+          <details className="benchmark-comparison">
+            <summary><h3 id="simulator-comparison-heading">Benchmark Comparison</h3></summary>
+            <div id="comparison" className="related-work-table-wrap" role="region" aria-labelledby="simulator-comparison-heading" tabIndex={0}>
+              <table className="related-work-table related-work-table--comparison">
+                <caption className="related-work-caption">
+                  Table 1. Intervention coupling means robot actions can change how a hazard develops.
+                  Inference-time progression means the environment changes while a model decides.
+                  “Not reported” marks an unspecified evaluation setting in the cited work.
+                </caption>
+                <colgroup span={1} />
+                <colgroup span={2} />
+                <colgroup span={5} />
+                <thead>
+                  <tr className="related-work-table-head-group">
+                    <th rowSpan={2} scope="col">Benchmark</th>
+                    <th colSpan={2} scope="colgroup">Hazard Dynamics</th>
+                    <th colSpan={5} scope="colgroup">Evaluation Setup</th>
+                  </tr>
+                  <tr>
+                    {comparisonColumns.map((column) => (
+                      <th key={column.key} scope="col">{column.title}</th>
+                    ))}
+                  </tr>
+                </thead>
+                {comparisonGroups.map((group) => (
+                  <tbody key={group.label}>
+                    <tr className="related-work-table-row--group">
+                      <th scope="rowgroup" colSpan={comparisonColumns.length + 1}>{group.label}</th>
+                    </tr>
+                    {group.rows.map((row) => (
+                      <tr key={row.benchmark} className={row.ours ? 'related-work-table-row--ours' : undefined}>
+                        <th scope="row">
+                          {row.citation ? (
+                            <a href={row.citation.url} title={row.citation.title}>
+                              {row.benchmark} [{row.citation.number}]
+                            </a>
+                          ) : `${row.benchmark} (Ours)`}
+                        </th>
+                        {comparisonColumns.map((column) => (
+                          <td key={column.key}>{row[column.key]}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                ))}
+              </table>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -459,10 +691,13 @@ function App() {
 
       <section className="platform band band--dark" id="evaluation">
         <div className="section-heading">
-          <h2>Evaluation</h2>
+          <h2>Evaluation Protocol</h2>
           <p className="evaluation-protocol">
-            Each model–task condition is evaluated across six residential scenarios, with three runs
-            per scenario. The applicable metrics depend on the <a href="#tasks">task configuration</a>.
+            Each model condition covers six residential scenarios with three trials per scenario.
+            After preburn, each trial runs for 300 seconds of environment time. Property and health
+            protection use matched free-burning runs as references. Team Gain uses a matched single robot.
+            In the main T4 and T5 comparisons, four firefighting robots use decentralized control with
+            communication. Metrics vary by <a href="#tasks">task configuration</a>.
           </p>
         </div>
         <div className="metric-grid">
@@ -482,84 +717,7 @@ function App() {
         </div>
       </section>
 
-      <section
-        className="related-work band band--light"
-        id="comparison"
-        aria-labelledby="simulator-comparison-heading"
-      >
-        <div className="section-heading">
-          <h2 id="simulator-comparison-heading">Comparison</h2>
-        </div>
-        <div className="related-work-table-wrap" role="region" aria-labelledby="simulator-comparison-heading" tabIndex={0}>
-          <table className="related-work-table related-work-table--comparison">
-            <caption className="related-work-caption">
-              Table 1. Intervention coupling means robot actions can change how a hazard develops.
-              Inference-time progression means the environment changes while a model decides.
-              “Not reported” marks a capability the benchmark publication leaves unspecified.
-            </caption>
-            <colgroup span={1} />
-            <colgroup span={2} />
-            <colgroup span={5} />
-            <thead>
-              <tr className="related-work-table-head-group">
-                <th rowSpan={2} scope="col">Benchmark</th>
-                <th colSpan={2} scope="colgroup">Hazard Dynamics</th>
-                <th colSpan={5} scope="colgroup">Evaluation Setup</th>
-              </tr>
-              <tr>
-                {comparisonColumns.map((column) => (
-                  <th key={column.key} scope="col">{column.title}</th>
-                ))}
-              </tr>
-            </thead>
-            {comparisonGroups.map((group) => (
-              <tbody key={group.label}>
-                <tr className="related-work-table-row--group">
-                  <th scope="rowgroup" colSpan={comparisonColumns.length + 1}>{group.label}</th>
-                </tr>
-                {group.rows.map((row) => (
-                  <tr key={row.benchmark} className={row.ours ? 'related-work-table-row--ours' : undefined}>
-                    <th scope="row">{row.benchmark}</th>
-                    {comparisonColumns.map((column) => (
-                      <td key={column.key}>{row[column.key]}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            ))}
-          </table>
-        </div>
-      </section>
-
-      <section className="findings band band--beige" id="findings">
-        <div className="section-heading">
-          <h2>Findings</h2>
-        </div>
-        <div className="finding-result">
-          <p>
-            On T5 with local symbolic observations, GPT-6 and GPT-6.1 differed by just
-            <strong> 1.01 percentage points</strong> in Saved Value Ratio. GPT-6.1’s Civilian Rescue Rate was
-            <strong> 33.33 percentage points higher</strong>.
-          </p>
-          <table className="finding-table">
-            <caption>
-              Table 2, T5. Four firefighting robots under decentralized control with communication.
-              Values are means across six scenarios, with three trials per scenario.
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">Model</th>
-                <th scope="col">Saved Value Ratio</th>
-                <th scope="col">Civilian Rescue Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th scope="row">GPT-6</th><td>40.98%</td><td>52.78%</td></tr>
-              <tr><th scope="row">GPT-6.1</th><td>39.97%</td><td>86.11%</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <Experiments tasks={tasks} />
     </main>
   )
 }

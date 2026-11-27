@@ -1,82 +1,92 @@
 # FireGround
 
-[Project website](https://zuwq.github.io/FireGround/) · [Dataset](https://huggingface.co/datasets/EMAS4Rescue/FireGround)
+**Benchmarking Embodied Decision-Making in Dynamic Residential Fires**
 
-## S1R Oracle example
+[Project Website](https://zuwq.github.io/FireGround/) · [Dataset](https://huggingface.co/datasets/EMAS4Rescue/FireGround) · [Download Simulator][simulator] · [Quick Start](#quick-start)
 
-Run one firefighting robot in the S1R rescue scene using local text observations. The simulator preburns for 5 seconds, then gives the robot 300 seconds to act. The three JSON files in `examples/s1r_oracle/` configure the scene, agent task and runtime. A fresh run generates its own trajectories.
+![FireGround overview showing two response routes from the same initial fires, five task configurations, and their evaluation metrics.](web/src/picture/overview.webp)
 
-## Download the UE environment
+*Figure 1. Two rooms are on fire. Should the robots reach the study or the gym first? Both runs start with the same fires and show how that choice affects property damage and civilian health.*
 
-The S1R ignition check and agent episode use the UE 3.6 Linux Shipping build. The compressed archive is approximately **2 GB**. [Download the UE environment from Google Drive](https://drive.google.com/file/d/142bx8gi3KW1_9uYDwlMmb3jAImTkM21g/view?usp=drive_link).
+## Abstract
 
-Extract the archive and set `--ue-root` in the commands below to the directory containing `TongSim_Lite/Binaries/Linux/TongSim_Lite-Linux-Shipping`. The launcher loads the S1R scene and starts UE automatically.
+Dynamic embodied environments such as residential fire scenarios challenge agents to interpret evolving visual observations and act promptly as hazards evolve. We introduce FireGround, an Unreal Engine 5 benchmark coupling local visual perception, fire suppression, and civilian evacuation in 3D residential environments. Smoke and illumination changes affect observations, suppression alters fire progression, and civilian health deteriorates with exposure, requiring agents to balance information gathering with timely intervention. Its five tasks vary observation scope, rescue objectives, and robot teams, with metrics tailored to these challenges. We also introduce FireAgents, a standardized agent architecture supporting symbolic and visual observations under single-robot and centralized or decentralized multi-robot control. Evaluations of proprietary and open-source foundation models reveal lower performance under visual observations in several settings and difficulties translating broader exploration into better outcomes. Benefits from perception assistance and additional robots depend on task objectives and control structure. Together, FireGround and FireAgents support systematic evaluation of perception, reasoning, and action in dynamic embodied environments.
 
-## Install
+## Quick Start
 
-From the repository root on Linux x86-64, use Python 3.12:
+### 1. Download the Simulator
+
+[Download the Unreal Engine simulator for Linux (approximately 2 GB)][simulator] and extract the archive. In a Bash terminal, set `UE_ROOT` to the extracted directory that contains `TongSim_Lite/`. The second command prints a confirmation when it finds the executable.
 
 ```bash
+export UE_ROOT="/absolute/path/to/extracted/Linux"
+test -x "$UE_ROOT/TongSim_Lite/Binaries/Linux/TongSim_Lite-Linux-Shipping" && echo "Simulator found"
+```
+
+The demo launcher loads the bundled scene configuration into a temporary copy of the simulator, starts UE automatically in offscreen mode, and closes it when the run finishes. Keep enough free disk space for an extra copy of the extracted build if your filesystem cannot share the copied data through reflinks.
+
+### 2. Set Up the Environment
+
+Use Linux x86-64 and Python 3.12. In the same terminal, clone the repository and install the Python dependencies. If you already have a checkout, start at the repository root with the virtual environment command.
+
+```bash
+git clone https://github.com/ZUWQ/FireGround.git
+cd FireGround
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.lock
 python -B tools/run_episode.py --check-only
 ```
 
-The last command verifies imports, prompt construction and the three configuration files locally. It requires no GPU, UE process or model credentials.
+The last command checks the Python imports and the bundled demo configuration offline. Look for `passed offline preflight` in the terminal. To run the simulator in the next step, use a regular user account on a machine with a Vulkan-capable GPU and keep local port `5726` free.
 
-## Start S1R and verify ignition (no model)
+### 3. Run the Firefighting Demo
 
-Run as a regular user on a machine with a Vulkan-capable GPU. Keep port 5726 free and choose a new output directory outside the build. The launcher makes a temporary private build copy using GNU cp; allow space for the extracted build if your filesystem cannot use reflinks.
+In this demo, one firefighting robot uses local text observations to respond to a residential fire. Use a fresh output directory outside the simulator build for each run.
 
-Start with UE closed on this port. The command below automatically writes the bundled
-`examples/s1r_oracle/scene_config.json` into the **temporary build copy** at
-`TongSim_Lite/SceneConfig.json` before starting UE. Leave the scene file in your
-downloaded build as supplied.
+#### Check that the simulator works
+
+Start here to verify the scene and ignition without a model or API key.
 
 ```bash
 python -B tools/run_episode.py --check-fire \
-  --ue-root /path/to/extracted/Linux \
-  --output-dir ./runs/s1r-fire-check
+  --ue-root "$UE_ROOT" \
+  --output-dir ./runs/fire-check
 ```
 
-The check waits for a stable scene with two NPCs, confirms zero burning objects,
-ignites the scene, and checks for a positive burning count after the five-second
-preburn. It writes the counts and scene checksum to `ignition.json` in the output
-directory and closes its UE instance. This command needs no model endpoint or API key.
+The launcher waits for the two civilians to appear, starts the fire, and counts burning objects after five seconds. A successful check prints `"status": "passed"`, with `burning_before` equal to zero and `burning_after_preburn` greater than zero. The same result is saved in `runs/fire-check/ignition.json`.
 
-## Run an agent episode
+#### Run the agent
 
-The agent command below uses the same automatic scene setup and starts a new UE instance.
-Set the endpoint and model for your OpenAI-compatible Chat Completions service. The live run sends observations to the service and can incur provider charges.
+Choose a model and endpoint from your OpenAI-compatible Chat Completions provider. Replace the two placeholders below, then enter your API key at the prompt. This run sends observations to the model and may incur provider charges.
 
 ```bash
-export OPENAI_BASE_URL='https://your-provider.example/v1'
-export OPENAI_MODEL='your-model-id'
-read -rsp 'Model API key: ' OPENAI_API_KEY
+export OPENAI_BASE_URL="https://your-provider.example/v1"
+export OPENAI_MODEL="your-model-id"
+read -rsp "Model API key: " OPENAI_API_KEY
 echo
 export OPENAI_API_KEY
 
 python -B tools/run_episode.py \
-  --ue-root /path/to/extracted/Linux \
-  --output-dir ./runs/s1r-001
+  --ue-root "$UE_ROOT" \
+  --output-dir ./runs/demo-001
 ```
 
-The launcher starts UE, waits for the scene to load, runs the agent and prints the run ID, model call count, action count and location of `evaluation/summary.json`. The output directory also contains the trajectory and the UE, readiness and episode logs.
+The launcher starts a fresh scene and gives the robot 300 seconds to act after ignition and the five-second preburn. At completion it prints the run ID and the counts of model calls and physical actions. Open `runs/demo-001/evaluation/summary.json` for the episode summary or `runs/demo-001/evaluation/world_states.jsonl` to follow the trajectory over time.
 
-## Optional scoring
+## Optional: Score a Completed Run
 
-To calculate the four benchmark metrics for a completed episode, supply the matching S1R free-burning reference (run ID `20261113_234218_892581_772a5a1a`). Pass its directory containing `scene_config.json` and `evaluation/`.
+To compute the four benchmark metrics for the demo, supply the matching reference trajectory in which the fire burned without intervention. The scorer expects reference run `20261113_234218_892581_772a5a1a`. Set `--baseline` to the separately obtained directory containing that run’s `scene_config.json` and `evaluation/`.
 
 ```bash
-python -B tools/score_episode.py --episode ./runs/s1r-001 --baseline /path/to/reference-run
+python -B tools/score_episode.py \
+  --episode ./runs/demo-001 \
+  --baseline /path/to/reference-run
 ```
 
-The runnable example covers S1R local Oracle. Reproducing other paper conditions requires the corresponding scenario, runner and experiment configuration.
+## Website Development
 
-## Project website
-
-The React/Vite website is in `web/`. To preview it locally with Node.js 22:
+The [project website source](web/) uses React and Vite. From the repository root, start a local development server with Node.js 22.
 
 ```bash
 cd web
@@ -84,4 +94,6 @@ npm ci
 npm run dev
 ```
 
-To preview the production build, run `npm run build` followed by `npm run preview` in the same directory. GitHub Pages publishes `web/dist/` when changes reach `main`.
+To preview the production site locally, run `npm run build` followed by `npm run preview` in the same directory. GitHub Pages publishes `web/dist/` when changes reach `main`.
+
+[simulator]: https://drive.google.com/file/d/142bx8gi3KW1_9uYDwlMmb3jAImTkM21g/view?usp=drive_link
