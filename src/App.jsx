@@ -1,7 +1,7 @@
 // 用 npm run dev 指令启动
 import './App.css'
-import overviewImageUrl from './picture/overview.jpg?url'
-import agentframeworkImageUrl from './picture/agent_framework.jpg?url'
+import overviewImageUrl from './picture/overview.webp'
+import fireAgentsImageUrl from './picture/fireagents.webp'
 
 const HF_DEMO_VIDEO_BASE =
   'https://huggingface.co/datasets/ZWQ1103/temp_video/resolve/main'
@@ -48,232 +48,203 @@ const challengeDemos = [
   },
 ]
 
-const taskCards = [
+const tasks = [
   {
-    title: 'Fire Suppression',
-    body: 'Three firefighting robots explore initially unknown rooms, locate burning objects, and suppress active fires before cascading damage expands.',
+    id: 'T1',
+    title: 'Single-robot suppression',
+    description: 'One firefighting robot uses global symbolic observations to choose which fire to suppress first.',
   },
   {
-    title: 'Fire Suppression and Civilian Rescue',
-    body: 'Three firefighting robots and one rescue robot must control fire, find civilians with degrading health, provide mask protection, and escort them to safer regions.',
+    id: 'T2',
+    title: 'Add civilian rescue',
+    description: 'One robot uses the same global view to suppress fires and escort civilians to safety. Civilian safety takes priority.',
+  },
+  {
+    id: 'T3',
+    title: 'Limit the view',
+    description: 'One firefighting robot explores and suppresses fires using local symbolic or first-person visual observations.',
+  },
+  {
+    id: 'T4',
+    title: 'Add a robot team',
+    description: 'Multiple firefighting robots use global symbolic observations to divide suppression work and reassign targets as the fire spreads.',
+  },
+  {
+    id: 'T5',
+    title: 'Combine exploration, rescue, and teamwork',
+    description: 'A team uses local symbolic or visual observations to find fires and civilians, coordinate suppression, and escort civilians to safety.',
   },
 ]
 
 const metricGroups = [
   {
-    category: 'Outcome Metrics',
-    body: 'Outcome metrics evaluate how much damage the team prevents compared with a no-intervention baseline.',
+    category: 'Fire suppression',
     metrics: [
       {
         name: 'Saved Value Ratio (SVR)',
-        body: 'Measures the proportion of environmental object value preserved after agent intervention.',
+        body: 'Percentage of property loss prevented relative to a matched free-burning run.',
       },
       {
-        name: 'Human Protection Ratio (HPR)',
-        body: 'Measures the proportion of civilian health loss prevented through suppression, protection, and evacuation.',
+        name: 'Fire Clearance Time (FCT)',
+        body: 'Time until all fires are inactive. If fires remain at the time limit, the score adds 100 seconds for each remaining fire to the episode duration.',
       },
     ],
   },
   {
-    category: 'Temporal Metric',
-    body: 'The temporal metric captures whether agents suppress hazards quickly enough for their decisions to remain useful.',
+    category: 'Civilian rescue',
     metrics: [
       {
-        name: 'Completion Time (CT)',
-        body: 'Tracks when all fires first become inactive, with a penalty for fires still active at the episode horizon.',
+        name: 'Health Protection Ratio (HPR)',
+        body: 'Percentage of civilian health loss prevented relative to a matched free-burning run.',
+      },
+      {
+        name: 'Civilian Rescue Rate (CRR)',
+        body: 'Percentage of civilians who are alive and in the safe zone at the end of the episode.',
       },
     ],
   },
   {
-    category: 'Diagnostic Metrics',
-    body: 'Diagnostic metrics expose why a team succeeds or fails by measuring scaling, coverage, and consistency.',
+    category: 'Exploration and teamwork',
     metrics: [
-      {
-        name: 'Team Gain (TG)',
-        body: 'Measures the benefit of multi-agent operation over the corresponding single-agent baseline.',
-      },
       {
         name: 'Exploration Coverage (EC)',
-        body: 'Measures the fraction of environmental entities observed during an episode.',
+        body: 'Percentage of eligible objects seen at least once by any robot during the episode.',
       },
       {
-        name: 'Performance Variability (PV)',
-        body: 'Measures the range of SVR across repeated trials; lower values indicate more consistent behavior.',
+        name: 'Team Gain (TG)',
+        body: 'Difference in SVR, in percentage points, between a team and a single robot with the same objectives and observation interface.',
       },
     ],
   },
-]
-
-const findings = [
-  'Vision agents show a perception-action grounding bottleneck: high-level intent often fails to become effective navigation or suppression.',
-  'Symbolic observations improve exploration and outcomes, but late intervention still keeps agent teams below human teams in cooperative fire suppression.',
-  'Communication provides limited overall benefit in the reported settings, and decentralized asynchronous control is more responsive than centralized synchronized dispatch.',
-  'Larger teams add capacity unevenly; redundant convergence, uneven task allocation, and crowding can offset the gains from extra robots.',
 ]
 
 const comparisonColumns = [
-  { key: 'benchmark', title: 'Benchmark', subtitle: '' },
-  { key: 'autonomousHazard', title: 'Autonomous', subtitle: 'Hazard Progression' },
-  { key: 'irreversible', title: 'Cascading &', subtitle: 'Irreversible' },
-  { key: 'hazardAltering', title: 'Hazard-Altering', subtitle: 'Intervention' },
-  { key: 'exploration', title: 'Egocentric 3D', subtitle: 'Exploration' },
-  { key: 'multiAgent', title: 'Multi-Agent', subtitle: 'Decision-Making' },
-  { key: 'visual', title: 'Visual', subtitle: 'Obs.' },
-  { key: 'structured', title: 'Structured', subtitle: 'Obs.' },
+  { key: 'irreversibleLoss', title: 'Cumulative & Irreversible Loss' },
+  { key: 'interventionCoupling', title: 'Intervention Coupling' },
+  { key: 'inferenceProgression', title: 'Inference-Time Progression' },
+  { key: 'exploration', title: 'Active Exploration' },
+  { key: 'multiRobot', title: 'Multi-Robot Tasks' },
+  { key: 'modality', title: 'Input Modality' },
+  { key: 'tasks', title: 'Evaluated Tasks' },
 ]
 
-const comparisonRows = [
+const comparisonGroups = [
   {
-    type: 'group',
-    label: 'General embodied multi-agent benchmarks',
+    label: 'General embodied benchmarks',
+    rows: [
+      {
+        benchmark: 'MAP-THOR',
+        irreversibleLoss: 'Not reported',
+        interventionCoupling: 'Not reported',
+        inferenceProgression: 'Not reported',
+        exploration: 'Yes',
+        multiRobot: 'Yes',
+        modality: 'Visual + Symbolic',
+        tasks: 'Household tasks',
+      },
+      {
+        benchmark: 'PARTNR',
+        irreversibleLoss: 'Not reported',
+        interventionCoupling: 'Not reported',
+        inferenceProgression: 'Not reported',
+        exploration: 'Yes',
+        multiRobot: 'Yes',
+        modality: 'Symbolic',
+        tasks: 'Household tasks',
+      },
+    ],
   },
   {
-    benchmark: 'MAP-THOR',
-    autonomousHazard: 'no',
-    irreversible: 'no',
-    hazardAltering: 'no',
-    exploration: 'yes',
-    multiAgent: 'yes',
-    visual: 'yes',
-    structured: 'yes',
-  },
-  {
-    benchmark: 'Habitat-MAS',
-    autonomousHazard: 'no',
-    irreversible: 'no',
-    hazardAltering: 'no',
-    exploration: 'no',
-    multiAgent: 'yes',
-    visual: 'no',
-    structured: 'yes',
-  },
-  {
-    benchmark: 'RoCoBench',
-    autonomousHazard: 'no',
-    irreversible: 'no',
-    hazardAltering: 'no',
-    exploration: 'no',
-    multiAgent: 'yes',
-    visual: 'no',
-    structured: 'yes',
-  },
-  {
-    benchmark: 'VIKI-Bench',
-    autonomousHazard: 'no',
-    irreversible: 'no',
-    hazardAltering: 'no',
-    exploration: 'partial',
-    multiAgent: 'yes',
-    visual: 'yes',
-    structured: 'no',
-  },
-  {
-    benchmark: 'Virtual Community',
-    autonomousHazard: 'no',
-    irreversible: 'no',
-    hazardAltering: 'no',
-    exploration: 'yes',
-    multiAgent: 'yes',
-    visual: 'yes',
-    structured: 'yes',
-  },
-  {
-    type: 'group',
-    label: 'Hazard and disaster-response benchmarks',
-  },
-  {
-    benchmark: 'RMASBench',
-    autonomousHazard: 'yes',
-    irreversible: 'yes',
-    hazardAltering: 'yes',
-    exploration: 'no',
-    multiAgent: 'yes',
-    visual: 'no',
-    structured: 'yes',
-  },
-  {
-    benchmark: 'FD-Bench',
-    autonomousHazard: 'yes',
-    irreversible: 'partial',
-    hazardAltering: 'no',
-    exploration: 'no',
-    multiAgent: 'no',
-    visual: 'no',
-    structured: 'yes',
-  },
-  {
-    benchmark: 'HAZARD',
-    autonomousHazard: 'yes',
-    irreversible: 'yes',
-    hazardAltering: 'no',
-    exploration: 'yes',
-    multiAgent: 'no',
-    visual: 'yes',
-    structured: 'yes',
-  },
-  {
-    benchmark: 'CREW-Wildfire',
-    autonomousHazard: 'yes',
-    irreversible: 'yes',
-    hazardAltering: 'yes',
-    exploration: 'no',
-    multiAgent: 'yes',
-    visual: 'yes',
-    structured: 'yes',
-  },
-  {
-    benchmark: 'VULCAN',
-    autonomousHazard: 'yes',
-    irreversible: 'partial',
-    hazardAltering: 'no',
-    exploration: 'yes',
-    multiAgent: 'yes',
-    visual: 'yes',
-    structured: 'no',
-  },
-  {
-    benchmark: 'RescueBench',
-    autonomousHazard: 'no',
-    irreversible: 'no',
-    hazardAltering: 'no',
-    exploration: 'yes',
-    multiAgent: 'partial',
-    visual: 'yes',
-    structured: 'no',
-  },
-  {
-    benchmark: 'ESARBench',
-    autonomousHazard: 'no',
-    irreversible: 'no',
-    hazardAltering: 'no',
-    exploration: 'yes',
-    multiAgent: 'no',
-    visual: 'yes',
-    structured: 'no',
-  },
-  {
-    benchmark: 'FireGround',
-    autonomousHazard: 'yes',
-    irreversible: 'yes',
-    hazardAltering: 'yes',
-    exploration: 'yes',
-    multiAgent: 'yes',
-    visual: 'yes',
-    structured: 'yes',
-    ours: true,
+    label: 'Dynamic and hazard-response benchmarks',
+    rows: [
+      {
+        benchmark: 'FD-Bench',
+        irreversibleLoss: 'Not reported',
+        interventionCoupling: 'No',
+        inferenceProgression: 'No',
+        exploration: 'No',
+        multiRobot: 'No',
+        modality: 'Not reported',
+        tasks: 'Escape planning',
+      },
+      {
+        benchmark: 'HAZARD',
+        irreversibleLoss: 'Yes',
+        interventionCoupling: 'No',
+        inferenceProgression: 'Not reported',
+        exploration: 'Yes',
+        multiRobot: 'No',
+        modality: 'Symbolic',
+        tasks: 'Object rescue',
+      },
+      {
+        benchmark: 'CREW-Wildfire',
+        irreversibleLoss: 'Yes',
+        interventionCoupling: 'Yes',
+        inferenceProgression: 'No',
+        exploration: 'Yes',
+        multiRobot: 'Yes',
+        modality: 'Symbolic',
+        tasks: 'Suppression, rescue',
+      },
+      {
+        benchmark: 'FireNav',
+        irreversibleLoss: 'Yes',
+        interventionCoupling: 'No',
+        inferenceProgression: 'Not reported',
+        exploration: 'Yes',
+        multiRobot: 'Yes',
+        modality: 'Visual + Symbolic',
+        tasks: 'Target search',
+      },
+      {
+        benchmark: 'RescueBench',
+        irreversibleLoss: 'Not reported',
+        interventionCoupling: 'Not reported',
+        inferenceProgression: 'Not reported',
+        exploration: 'Yes',
+        multiRobot: 'Yes',
+        modality: 'Visual + Symbolic',
+        tasks: 'Search and rescue',
+      },
+      {
+        benchmark: 'RT-Safe',
+        irreversibleLoss: 'Not reported',
+        interventionCoupling: 'Yes',
+        inferenceProgression: 'Yes',
+        exploration: 'No',
+        multiRobot: 'No',
+        modality: 'Visual + Symbolic',
+        tasks: 'Safe navigation',
+      },
+      {
+        benchmark: 'ROAR',
+        irreversibleLoss: 'Yes',
+        interventionCoupling: 'Yes',
+        inferenceProgression: 'Yes',
+        exploration: 'Not reported',
+        multiRobot: 'Yes',
+        modality: 'Visual + Symbolic',
+        tasks: 'Collection, combat',
+      },
+      {
+        benchmark: 'FireGround',
+        irreversibleLoss: 'Yes',
+        interventionCoupling: 'Yes',
+        inferenceProgression: 'Yes',
+        exploration: 'Yes',
+        multiRobot: 'Yes',
+        modality: 'Visual + Symbolic',
+        tasks: 'Suppression, rescue',
+        ours: true,
+      },
+    ],
   },
 ]
-
-const supportMark = (value) => {
-  if (value === 'yes') return 'Yes'
-  if (value === 'partial') return '~'
-  return '-'
-}
-
 
 function App() {
   return (
-    <main>
+    <main id="top">
       <header className="site-header" aria-label="FireGround navigation">
         <a className="brand" href="#top" aria-label="FireGround home">
           FireGround
@@ -290,7 +261,7 @@ function App() {
         </nav>
       </header>
 
-      <section className="hero" id="top">
+      <section className="hero">
         <video
           className="hero-video"
           src={demonstrationVideoUrl}
@@ -302,11 +273,9 @@ function App() {
         />
         <div className="hero-shade" />
         <div className="hero-content">
-          <p className="eyebrow">A Benchmark for Embodied Multi-Agent Decision-Making in Residential Fires</p>
           <h1>FireGround</h1>
-          <p className="hero-copy">
-          Anonymous Authors
-          </p>
+          <p className="hero-copy">Benchmarking Embodied Decision-Making in Dynamic Residential Fires</p>
+          <p className="hero-authors">Anonymous Authors</p>
           <div className="hero-actions" aria-label="Primary links">
             <a
               href="https://anonymous.4open.science/r/FireGround/"
@@ -341,7 +310,21 @@ function App() {
           <h2>Abstract</h2>
         </div>
         <p className="lead abstract-lead">
-        Disaster response is a canonical testbed for embodied multi-agent systems (EMAS), requiring embodied perception, reasoning about spreading hazards, prediction of others’ future behavior, and coordinated intervention under time pressure. Existing benchmarks, however, rarely capture the coupled dynamics. To close this gap, we introduce FireGround, a high-fidelity UE5 benchmark for residential fires, smoke occlusion, declining civilian health, and intervention-coupled dynamics. It provides egocentric visual and symbolic observations, enabling controlled evaluation of visual grounding and downstream decision-making. Heterogeneous firefighting and rescue agents perform fire suppression and joint fire-rescue tasks. FireGround supports automated evaluation of task outcomes, intervention timeliness, spatial exploration, and coordination across coordination structures and team sizes. We further introduce FireAgents, a model-agnostic agent framework that connects diverse foundation models to FireGround through a standardized perception-decision-action interface. Results show that visual agents struggle to ground their observations into effective actions. Symbolic observations improve exploration and task outcomes, but agents still intervene late and fall behind human teams. Communication yields limited gains, while larger teams are often undermined by redundant actions, uneven task allocation, and crowding that restricts movement and visibility. Current models therefore struggle to convert environmental information and added team capacity into timely, complementary interventions.
+          Dynamic embodied environments such as residential fire scenarios challenge agents to
+          interpret evolving visual observations and act promptly as hazards evolve. We introduce
+          FireGround, an Unreal Engine 5 benchmark coupling local visual perception, fire suppression,
+          and civilian evacuation in 3D residential environments. Smoke and illumination changes
+          affect observations, suppression alters fire progression, and civilian health deteriorates
+          with exposure, requiring agents to balance information gathering with timely intervention.
+          Its five tasks vary observation scope, rescue objectives, and robot teams, with metrics
+          tailored to these challenges. We also introduce FireAgents, a standardized agent
+          architecture supporting symbolic and visual observations under single-robot and centralized
+          or decentralized multi-robot control. Evaluations of proprietary and open-source foundation
+          models reveal lower performance under visual observations in several settings and
+          difficulties translating broader exploration into better outcomes. Benefits from perception
+          assistance and additional robots depend on task objectives and control structure. Together,
+          FireGround and FireAgents support systematic evaluation of perception, reasoning, and action
+          in dynamic embodied environments.
         </p>
       </section>
 
@@ -349,20 +332,40 @@ function App() {
         <div className="section-heading">
           <h2>Overview</h2>
         </div>
-        <div className="figure-block">
-          <div className="overview-image-wrap">
+        <figure className="paper-figure">
+          <a href={overviewImageUrl} aria-label="View Figure 1 at full resolution">
             <img
               src={overviewImageUrl}
-              alt="FireGround overview figure"
-              className="overview-image"
+              alt="Two response routes from the same initial fires, with the five FireGround tasks and their evaluation metrics."
+              width="2400"
+              height="1119"
               loading="lazy"
               decoding="async"
             />
-          </div>
-          <div className="figure-placeholder">
-            Figure 1: Overview of FireGround. A high-fidelity environment models autonomously propagating fire and provides egocentric visual or symbolic observations. Heterogeneous robots perform fire-suppression and joint fire-rescue tasks under decentralized asynchronous control with inter-agent communication; centralized task dispatch serves as a coordination ablation. Evaluation uses outcome, temporal, and diagnostic metrics.
-          </div>
-        </div>
+          </a>
+          <figcaption>
+            <strong>Figure 1.</strong> Two rooms are on fire. Should the robots reach the study or
+            the gym first? The two runs start with the same fires and show how that choice changes
+            property damage and civilian health.
+          </figcaption>
+        </figure>
+
+        <section className="task-configurations" id="tasks" aria-labelledby="tasks-heading">
+          <h3 id="tasks-heading">Five task configurations</h3>
+          <p>T2, T3, and T4 each change one feature of T1. T5 combines all three changes.</p>
+          <dl className="task-list">
+            {tasks.map((task) => (
+              <div key={task.id}>
+                <dt><span>{task.id}</span> {task.title}</dt>
+                <dd>{task.description}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="task-note">
+            The main T4 and T5 experiments use four firefighting robots. A separate T5 experiment
+            varies the mix of firefighting and rescue robots.
+          </p>
+        </section>
       </section>
 
       <section className="simulation-preview band band--dark" id="simulation-preview">
@@ -429,63 +432,53 @@ function App() {
         <div className="section-heading">
           <h2>FireAgents</h2>
         </div>
-        <div className="figure-block">
-          <div className="overview-image-wrap">
+        <figure className="paper-figure paper-figure--agents">
+          <a href={fireAgentsImageUrl} aria-label="View Figure 2 at full resolution">
             <img
-              src={agentframeworkImageUrl}
-              alt="FireGround FireAgents interaction figure"
-              className="overview-image"
+              src={fireAgentsImageUrl}
+              alt="FireAgents connects visual or symbolic observations to decision-making, memory, and action execution. Urgent signals feed back into planning."
+              width="1600"
+              height="1153"
               loading="lazy"
               decoding="async"
             />
-          </div>
-          <div className="figure-placeholder">
-            Figure 2: Overview of FireAgents. At each decision step, an agent maps local
-            symbolic or RGB observations and context to a high-level action, which is
-            grounded and executed in the environment. Depth supports visual action grounding
-            without being exposed to the model, while execution feedback informs the next
-            step.
-          </div>
-        </div>
+          </a>
+          <figcaption>
+            <strong>Figure 2.</strong> Each run uses one observation configuration chosen from Global Symbolic,
+            Local Symbolic, RGB, and RGB+DS. RGB+DS adds object detections and segmentation masks.
+            The execution system uses depth to map image targets into 3D. Civilian distress signals and
+            urgent teammate messages trigger replanning.
+          </figcaption>
+        </figure>
+        <p className="control-description">
+          FireAgents supports single-robot control and two ways to organize a team. In decentralized
+          control, each robot has its own decision-making agent. In centralized control, one agent
+          assigns actions to the whole team. Robots execute their actions asynchronously in both.
+        </p>
       </section>
 
       <section className="platform band band--dark" id="evaluation">
         <div className="section-heading">
           <h2>Evaluation</h2>
+          <p className="evaluation-protocol">
+            Each model–task condition is evaluated across six residential scenarios, with three runs
+            per scenario. The applicable metrics depend on the <a href="#tasks">task configuration</a>.
+          </p>
         </div>
-        <div className="evaluation-module">
-          <div className="evaluation-module-heading">
-            <h3>Tasks</h3>
-          </div>
-          <div className="principle-grid principle-grid--tasks">
-            {taskCards.map((card) => (
-              <article className="principle-card" key={card.title}>
-                <h3>{card.title}</h3>
-                <p>{card.body}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-        <div className="evaluation-module">
-          <div className="evaluation-module-heading">
-            <h3>Metrics</h3>
-          </div>
-          <div className="metric-grid">
-            {metricGroups.map((group) => (
-              <article className="metric-group" key={group.category}>
-                <h3>{group.category}</h3>
-                <p>{group.body}</p>
-                <dl className="metric-list">
-                  {group.metrics.map((metric) => (
-                    <div className="metric-item" key={metric.name}>
-                      <dt>{metric.name}</dt>
-                      <dd>{metric.body}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </article>
-            ))}
-          </div>
+        <div className="metric-grid">
+          {metricGroups.map((group) => (
+            <section className="metric-group" key={group.category}>
+              <h3>{group.category}</h3>
+              <dl className="metric-list">
+                {group.metrics.map((metric) => (
+                  <div className="metric-item" key={metric.name}>
+                    <dt>{metric.name}</dt>
+                    <dd>{metric.body}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
         </div>
       </section>
 
@@ -497,64 +490,43 @@ function App() {
         <div className="section-heading">
           <h2 id="simulator-comparison-heading">Comparison</h2>
         </div>
-        <div className="related-work-table-wrap">
+        <div className="related-work-table-wrap" role="region" aria-labelledby="simulator-comparison-heading" tabIndex={0}>
           <table className="related-work-table related-work-table--comparison">
             <caption className="related-work-caption">
-              Comparison with representative embodied multi-agent and
-              disaster-response benchmarks. Yes, ~, and - denote full, partial
-              or restricted, and no support, respectively. Entries reflect
-              evaluated settings rather than all capabilities of the underlying
-              simulators. Visual inputs are image-based; structured inputs
-              contain semantic, geometric, or state information.
+              Table 1. Intervention coupling means robot actions can change how a hazard develops.
+              Inference-time progression means the environment changes while a model decides.
+              “Not reported” marks a capability the benchmark publication leaves unspecified.
             </caption>
+            <colgroup span={1} />
+            <colgroup span={2} />
+            <colgroup span={5} />
             <thead>
               <tr className="related-work-table-head-group">
-                <th scope="col" aria-label="Benchmark" />
-                <th colSpan={3} scope="colgroup">
-                  Hazard Dynamics
-                </th>
-                <th colSpan={4} scope="colgroup">
-                  Embodied Evaluation
-                </th>
+                <th rowSpan={2} scope="col">Benchmark</th>
+                <th colSpan={2} scope="colgroup">Hazard Dynamics</th>
+                <th colSpan={5} scope="colgroup">Evaluation Setup</th>
               </tr>
               <tr>
                 {comparisonColumns.map((column) => (
-                  <th scope="col" key={column.key}>
-                    <span className="related-work-th-l1">{column.title}</span>
-                    <br />
-                    <span className="related-work-th-l2">{column.subtitle || '\u00a0'}</span>
-                  </th>
+                  <th key={column.key} scope="col">{column.title}</th>
                 ))}
               </tr>
             </thead>
-            <tbody>
-              {comparisonRows.map((item) => {
-                if (item.type === 'group') {
-                  return (
-                    <tr className="related-work-table-row--group" key={item.label}>
-                      <th colSpan={comparisonColumns.length} scope="rowgroup">
-                        {item.label}
-                      </th>
-                    </tr>
-                  )
-                }
-
-                return (
-                  <tr
-                    key={item.benchmark}
-                    className={item.ours ? 'related-work-table-row--ours' : undefined}
-                  >
+            {comparisonGroups.map((group) => (
+              <tbody key={group.label}>
+                <tr className="related-work-table-row--group">
+                  <th scope="rowgroup" colSpan={comparisonColumns.length + 1}>{group.label}</th>
+                </tr>
+                {group.rows.map((row) => (
+                  <tr key={row.benchmark} className={row.ours ? 'related-work-table-row--ours' : undefined}>
+                    <th scope="row">{row.benchmark}</th>
                     {comparisonColumns.map((column) => (
-                      <td key={column.key}>
-                        {column.key === 'benchmark'
-                          ? item.benchmark
-                          : supportMark(item[column.key])}
-                      </td>
+                      <td key={column.key}>{row[column.key]}</td>
                     ))}
                   </tr>
-                )
-              })}
-            </tbody>
+                ))}
+              </tbody>
+            ))}
           </table>
         </div>
       </section>
@@ -563,11 +535,30 @@ function App() {
         <div className="section-heading">
           <h2>Findings</h2>
         </div>
-        <ul className="finding-list">
-          {findings.map((finding) => (
-            <li key={finding}>{finding}</li>
-          ))}
-        </ul>
+        <div className="finding-result">
+          <p>
+            On T5 with local symbolic observations, GPT-6 and GPT-6.1 differed by just
+            <strong> 1.01 percentage points</strong> in Saved Value Ratio. GPT-6.1’s Civilian Rescue Rate was
+            <strong> 33.33 percentage points higher</strong>.
+          </p>
+          <table className="finding-table">
+            <caption>
+              Table 2, T5. Four firefighting robots under decentralized control with communication.
+              Values are means across six scenarios, with three trials per scenario.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Model</th>
+                <th scope="col">Saved Value Ratio</th>
+                <th scope="col">Civilian Rescue Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">GPT-6</th><td>40.98%</td><td>52.78%</td></tr>
+              <tr><th scope="row">GPT-6.1</th><td>39.97%</td><td>86.11%</td></tr>
+            </tbody>
+          </table>
+        </div>
       </section>
     </main>
   )
