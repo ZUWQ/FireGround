@@ -1,0 +1,4 @@
+{
+  "observation_scope": "local",
+  "scope_prompt": "Use local observations, teammate reports and retained history. Known room locations and initial counts do not reveal undiscovered objects, civilians or fire locations. Treat unobserved room contents as unknown."
+}

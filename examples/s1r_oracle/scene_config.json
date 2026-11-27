@@ -1,0 +1,67 @@
+{
+  "FireMultiply1": 20,
+  "FireMultiply2": 1.5,
+  "FireRateDelayTime": 5,
+  "OutfireMultiply": 4,
+  "FireSpreadScale": 1.5,
+  "RoomGenerate": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "FireRoom": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "NPCRoom": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "SafeArea": {
+    "min": {
+      "x": -500,
+      "y": -250,
+      "z": 900
+    },
+    "max": {
+      "x": 500,
+      "y": 250,
+      "z": 1100
+    }
+  }
+}

@@ -13,7 +13,7 @@ dist-ssr
 *.local
 
 # Large hosted media
-assets/demonstration.webm
+web/assets/demonstration.webm
 
 # Editor directories and files
 .vscode/*
@@ -25,3 +25,12 @@ assets/demonstration.webm
 *.njsproj
 *.sln
 *.sw?
+
+# Python environments, credentials, and generated episodes
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+runs/
+outputs/

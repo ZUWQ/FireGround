@@ -1,0 +1,4 @@
+{
+  "coordination_mode": "none",
+  "coordination_prompt": "Act independently. Teammate coordination is disabled; communication must be null."
+}

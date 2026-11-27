@@ -1,0 +1,4 @@
+{
+  "coordination_mode": "centralized",
+  "coordination_prompt": "Work on signal_channel.super_agent_assignment. If the assignment is absent or blocked, report the limitation and choose a feasible action consistent with protecting civilians. Communicate actionable discoveries, requests for help, and progress; include the target and supporting evidence. Reserve urgent for information that warrants immediate interruption; important and useful are read at the next decision. Receipt and task completion require separate evidence."
+}

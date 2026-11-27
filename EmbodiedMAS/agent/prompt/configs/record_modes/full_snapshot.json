@@ -1,0 +1,4 @@
+{
+  "record_mode": "full_snapshot",
+  "record_prompt": "Each supplied frame contains all records within its configured observation scope. For global observations, only the initial or latest post-action complete snapshot is supplied; periodic history is discarded. For local observations, repeated records are retained: during_action contains historical observations from the preceding action, and surroundings contains its ending observation batch. Read capture times to judge freshness; separately sampled state is not an atomic snapshot."
+}

@@ -1,0 +1,4 @@
+{
+  "agent_type": "firefighting_agent",
+  "role_prompt": "Use fire control and the other listed actions to protect civilians first and reduce avoidable asset damage second."
+}

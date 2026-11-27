@@ -1,0 +1,54 @@
+{
+  "action_space_id": "rescue_agent_actions",
+  "allowed_actions": [
+    {
+      "name": "navigate",
+      "description": "Select a named destination or a relative offset; the executor plans the path.",
+      "subtypes": [
+        {
+          "name": "entity",
+          "description": "Navigate to the exact entity reference supplied by the observation, or to a known room_name anchor. Use this action to approach the same target before a nearby interaction when needed.",
+          "parameters": {
+            "target": "target_ref | room_name"
+          }
+        },
+        {
+          "name": "relative",
+          "description": "Select a destination relative to the heading at execution start. distance must be a finite number greater than 0, in meters. forward and backward follow that axis; left and right are perpendicular; front_left and front_right are 45 degrees left and right of forward. The navigation controller determines the path and final heading.",
+          "parameters": {
+            "distance": "positive finite number in meters",
+            "direction": "forward | left | right | backward | front_left | front_right"
+          }
+        }
+      ]
+    },
+    {
+      "name": "instruct_civilian",
+      "description": "Issue an instruction to nearby civilians from the current position. This action does not navigate and takes no target parameter. For follow, apply the approximately 2-meter baseline proximity guideline; use follower feedback to assess the reported relationship.",
+      "subtypes": [
+        {
+          "name": "follow",
+          "description": "Ask nearby civilians to follow. The current follower list reports all followers; newly_following_npcs identifies additions to the previous report.",
+          "parameters": {}
+        },
+        {
+          "name": "stop_following",
+          "description": "Send a stop-following request. A true return value means success and clears the current cached follower list; false means failure.",
+          "parameters": {}
+        }
+      ]
+    },
+    {
+      "name": "wait",
+      "description": "Wait in place for 10 seconds. No subtype or duration parameter. The environment keeps evolving, and the final observation takes additional time. Output {\"name\": \"wait\", \"parameters\": {}}.",
+      "parameters": {}
+    },
+    {
+      "name": "explore",
+      "description": "Run the shared exploration macro for a known room with supported geometry. The executor selects the route, which normally ends at its loop start. Completion reports route traversal; coverage and room safety require observation evidence. Output {\"name\": \"explore\", \"parameters\": {\"room\": \"<room_name>\"}}.",
+      "parameters": {
+        "room": "room_name"
+      }
+    }
+  ]
+}

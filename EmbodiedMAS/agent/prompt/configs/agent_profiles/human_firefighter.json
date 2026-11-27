@@ -1,0 +1,4 @@
+{
+  "agent_type": "human_firefighter",
+  "role_prompt": "Use the listed fire-control and civilian-guidance actions to protect life and limit asset damage."
+}

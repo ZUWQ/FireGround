@@ -1,0 +1,96 @@
+{
+  "task_id": "s1r_oracle",
+  "runner": "SA",
+  "mode": "text",
+  "observation_scope": "local",
+  "record_mode": "full_snapshot",
+  "vision_backend": "grounded_sam",
+  "agent_types": [
+    "FR"
+  ],
+  "agent_positions": [
+    {
+      "x": 0,
+      "y": 0,
+      "z": 1000,
+      "rotation": [
+        0,
+        0,
+        180
+      ]
+    }
+  ],
+  "time_limit_sec": 300.0,
+  "max_steps": null,
+  "burn_time": 5.0,
+  "max_memory_size": 3,
+  "memory_note_max_chars": 2000,
+  "scene_config": {
+    "FireMultiply1": 20,
+    "FireMultiply2": 1.5,
+    "FireRateDelayTime": 5,
+    "OutfireMultiply": 4,
+    "FireSpreadScale": 1.5,
+    "RoomGenerate": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "FireRoom": [
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "NPCRoom": [
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "SafeArea": {
+      "min": {
+        "x": -500,
+        "y": -250,
+        "z": 900
+      },
+      "max": {
+        "x": 500,
+        "y": 250,
+        "z": 1100
+      }
+    }
+  },
+  "llm_profile": null
+}

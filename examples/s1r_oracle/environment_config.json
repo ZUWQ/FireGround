@@ -1,0 +1,46 @@
+{
+  "prompt_environment": {
+    "num_agents": 1,
+    "num_fire_agents": 1,
+    "num_rescue_agents": 0,
+    "num_civilians": "unknown",
+    "num_fires": "unknown",
+    "other_info": ""
+  },
+  "session_id": null,
+  "pause_during_llm": false,
+  "max_memory_size": 3,
+  "memory_note_max_chars": 2000,
+  "burn_time": 5.0,
+  "perception_interval_sec": 2.0,
+  "vision_backend": "grounded_sam",
+  "vision_max_tokens": 8192,
+  "perception_capture_timeout_sec": 60.0,
+  "navigation_tolerance_m": 2.0,
+  "exploration": {
+    "inset_m": 1.0,
+    "acceptance_radius_m": 0.5,
+    "endpoint_tolerance_m": 2.0,
+    "segment_timeout_sec": 30.0,
+    "total_timeout_sec": 120.0
+  },
+  "observation_scope": "local",
+  "record_mode": "full_snapshot",
+  "coordination_mode": "none",
+  "time_limit_sec": 300.0,
+  "SafeArea": [
+    {
+      "min": {
+        "x": -500.0,
+        "y": -250.0,
+        "z": 900.0
+      },
+      "max": {
+        "x": 500.0,
+        "y": 250.0,
+        "z": 1100.0
+      }
+    }
+  ],
+  "text_max_tokens": 8192
+}

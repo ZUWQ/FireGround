@@ -278,7 +278,7 @@ function App() {
           <p className="hero-authors">Anonymous Authors</p>
           <div className="hero-actions" aria-label="Primary links">
             <a
-              href="https://anonymous.4open.science/r/FireGround/"
+              href="https://github.com/ZUWQ/FireGround"
               className="primary-link"
               target="_blank"
               rel="noopener noreferrer"
@@ -294,7 +294,7 @@ function App() {
               Dataset
             </a>
             <a
-              href="https://drive.google.com/file/d/1wgos_ZZG2T6XC8TU00DXmWDLy1ua4tHv/view?usp=drive_link"
+              href="https://drive.google.com/file/d/142bx8gi3KW1_9uYDwlMmb3jAImTkM21g/view?usp=drive_link"
               className="primary-link"
               target="_blank"
               rel="noopener noreferrer"

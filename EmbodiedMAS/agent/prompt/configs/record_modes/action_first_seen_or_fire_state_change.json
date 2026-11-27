@@ -1,0 +1,4 @@
+{
+  "record_mode": "action_first_seen_or_fire_state_change",
+  "record_prompt": "Within each action, read during_action before surroundings. For each stable identity, records are emitted at first sighting and whenever burning (object), fire_affected (NPC), or is_safe (NPC) changes. Changes only to location, health, remaining_percent or room are filtered, so those values can lag the latest raw sample.\nComparison resets at each action; startup is action 0. Records without stable identities are retained. Empty rooms may mean no emitted changes. known_objects updates only from emitted records. Use capture times to interpret the sequence."
+}

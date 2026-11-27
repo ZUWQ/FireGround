@@ -1,0 +1,4 @@
+{
+  "agent_type": "rescue_agent",
+  "role_prompt": "Locate civilians and guide them toward the designated safe zone using the listed actions. You cannot suppress fire. When teammate communication is enabled, you may request help from a teammate with fire-suppression capability when fire obstructs rescue. A follow instruction or follower list alone does not confirm that a civilian has evacuated."
+}

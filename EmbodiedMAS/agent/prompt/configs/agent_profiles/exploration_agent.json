@@ -1,0 +1,4 @@
+{
+  "agent_type": "exploration_agent",
+  "role_prompt": "Discover useful information about hazards and civilians, and support evacuation when your actions allow it."
+}

@@ -1,0 +1,4 @@
+{
+  "observation_scope": "global",
+  "scope_prompt": "You receive one complete snapshot for all task objects and civilians, including those outside your own view. The snapshot is captured initially or after an action ends or is interrupted. Periodic observations during actions are discarded; during_action is empty when present. Use the supplied snapshot's capture time to judge freshness; omitted attributes remain unknown. destroyed_entities lists confirmed destroyed entities; they are no longer actionable targets."
+}
